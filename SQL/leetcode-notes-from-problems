@@ -3,3 +3,6 @@
 
 ref : https://leetcode.com/problems/the-number-of-employees-which-report-to-each-employee/
 --> here in this problem we had to use self join cause single col has two roles emp and manager, one col is pointing towwards another, can be solved by cte , win func and simple join query
+
+
+---> regexp note down every evening 
