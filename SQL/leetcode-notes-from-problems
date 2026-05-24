@@ -4,5 +4,7 @@
 ref : https://leetcode.com/problems/the-number-of-employees-which-report-to-each-employee/
 --> here in this problem we had to use self join cause single col has two roles emp and manager, one col is pointing towwards another, can be solved by cte , win func and simple join query
 
+Whenever a SQL problem asks you to treat two different scenarios differently, remember that a single, standard WHERE clause usually won't cut it. You will
+almost always need a UNION to split the logic, a CASE statement, or a Window Function (ROW_NUMBER()) to rank the rows.
 
 ---> regexp note down every evening 
