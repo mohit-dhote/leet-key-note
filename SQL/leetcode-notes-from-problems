@@ -1,10 +1,32 @@
 # this is key notes of leetcode problems 
 
 
-ref : https://leetcode.com/problems/the-number-of-employees-which-report-to-each-employee/
+1. ref : https://leetcode.com/problems/the-number-of-employees-which-report-to-each-employee/
 --> here in this problem we had to use self join cause single col has two roles emp and manager, one col is pointing towwards another, can be solved by cte , win func and simple join query
 
-Whenever a SQL problem asks you to treat two different scenarios differently, remember that a single, standard WHERE clause usually won't cut it. You will
+2. Whenever a SQL problem asks you to treat two different scenarios differently, remember that a single, standard WHERE clause usually won't cut it. You will
 almost always need a UNION to split the logic, a CASE statement, or a Window Function (ROW_NUMBER()) to rank the rows.
 
----> regexp note down every evening 
+3. ---> regexp note down every evening 
+
+4. manager who left the company, so manager_id is not null, employee_id is null  --- imp
+
+
+SELECT e.employee_id
+FROM Employees e
+LEFT JOIN Employees m ON e.manager_id = m.employee_id
+WHERE e.salary < 30000
+  AND e.manager_id IS NOT NULL
+  AND m.employee_id IS NULL
+ORDER BY e.employee_id;
+
+or
+
+SELECT e.employee_id
+FROM Employees e
+LEFT JOIN Employees m 
+ON e.manager_id = m.employee_id
+WHERE e.salary < 30000
+  AND e.manager_id IS NOT NULL
+  AND m.employee_id IS NULL
+ORDER BY e.employee_id;
