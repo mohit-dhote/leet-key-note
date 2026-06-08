@@ -165,3 +165,39 @@ SELECT
 FROM ranked_categories
 WHERE RNK=1
 ORDER BY season
+
+----------------
+
+
+/* Write your PL/SQL query statement below */
+with reaction_count as(
+select  
+	 user_id,
+	 reaction,
+	 count(reaction) reaction_count
+from 
+	reactions
+where 
+	user_id in (select  user_id from reactions group by user_id having count(*) >=5 )
+group by user_id,reaction
+),reaction_rank as(
+select
+     user_id,
+	 reaction,
+	 reaction_count,
+	 rank() over (partition by user_id order by reaction_count  desc) rnk_reaction ,
+	 sum(reaction_count) over (partition by user_id) total_reaction
+from 
+	reaction_count
+)
+select
+	user_id,reaction as dominant_reaction, CAST(reaction_count * 1.0 / total_reaction AS DECIMAL(10,2)) AS reaction_ratio
+from 
+	reaction_rank
+where 
+	rnk_reaction = 1 
+and 
+	(reaction_count*1.0 / total_reaction >=0.6)
+order by reaction_ratio desc, user_id asc
+
+-----------
