@@ -247,5 +247,44 @@ covid_tests c inner join covid_tests c1
 
 ------------
 
+WITH ranked AS (
+    SELECT 
+        customer_id,
+        AVG(order_rating) AS avg_rating,
+        COUNT(*) AS total_orders,
+
+        SUM(
+            CASE 
+                WHEN (HOUR(order_timestamp) BETWEEN 11 AND 13
+                   OR HOUR(order_timestamp) BETWEEN 18 AND 20)
+                THEN 1 ELSE 0 
+            END
+        ) AS peak_hr_order,
+
+        COUNT(order_rating) AS rating_ord_count
+
+    FROM restaurant_orders
+    GROUP BY customer_id
+)
+
+SELECT 
+    customer_id,
+    total_orders,
+    ROUND(peak_hr_order * 1.0 / total_orders, 2) * 100 AS peak_hour_percentage,
+    ROUND(avg_rating, 2) AS average_rating
+
+FROM ranked
+
+WHERE 
+    total_orders >= 3
+    AND avg_rating >= 4
+    AND peak_hr_order * 1.0 / total_orders >= 0.60
+    AND rating_ord_count * 1.0 / total_orders >= 0.50
+
+ORDER BY avg_rating DESC, customer_id DESC;
+
+----------
+
+
 
 
