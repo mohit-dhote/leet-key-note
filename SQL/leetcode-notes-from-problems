@@ -1,4 +1,4 @@
-# this is key notes of leetcode problems 
+8# this is key notes of leetcode problems 
 
 
 1. ref : https://leetcode.com/problems/the-number-of-employees-which-report-to-each-employee/
@@ -339,7 +339,44 @@ ORDER BY meeting_heavy_weeks DESC, EE.employee_name
 
 --------
 
+# Write your MySQL query statement below
+WITH ranked AS (
+    SELECT 
+        i.*,
+        ROW_NUMBER() OVER (PARTITION BY store_id ORDER BY price DESC) AS rn_high,
+        ROW_NUMBER() OVER (PARTITION BY store_id ORDER BY price ASC) AS rn_low,
+        COUNT(*) OVER (PARTITION BY store_id) AS product_cnt
+    FROM inventory i
+),
 
+filtered AS (
+    SELECT 
+        store_id,
+        MAX(CASE WHEN rn_high = 1 THEN product_name END) AS most_exp_product,
+        MAX(CASE WHEN rn_high = 1 THEN quantity END) AS most_exp_qty,
+        MAX(CASE WHEN rn_low = 1 THEN product_name END) AS cheapest_product,
+        MAX(CASE WHEN rn_low = 1 THEN quantity END) AS cheapest_qty,
+        MAX(product_cnt) AS product_cnt
+    FROM ranked
+    GROUP BY store_id
+)
+
+SELECT 
+    s.store_id,
+    s.store_name,
+    s.location,
+    f.most_exp_product,
+    f.cheapest_product,
+    ROUND(f.cheapest_qty * 1.0 / f.most_exp_qty, 2) AS imbalance_ratio
+FROM filtered f
+JOIN stores s 
+    ON f.store_id = s.store_id
+WHERE 
+    f.product_cnt >= 3
+    AND f.most_exp_qty < f.cheapest_qty
+ORDER BY imbalance_ratio DESC, s.store_name ASC;
+
+-----
 
 
 
