@@ -397,5 +397,35 @@ from Triangle
 
 -----
 
+# Write your MySQL query statement below
+
+with basic_table as (
+select 
+user_id
+from course_completions
+group by user_id
+having count(course_id) >= 5
+and avg(course_rating) >= 4
+),
+
+master_table as (
+select
+course_name,
+lag(course_name) over (partition by c.user_id order by completion_date desc) as new_col
+from basic_table b
+inner join course_completions c
+on b.user_id = c.user_id
+)
+
+select 
+course_name as first_course,
+new_col as second_course,
+count(1) as transition_count
+from master_table
+where new_col is not null
+group by course_name, new_col
+order by transition_count desc, first_course, second_course;
+
+-----
 
 
